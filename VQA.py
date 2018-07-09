@@ -15,7 +15,7 @@ class Ui_Dialog(object):
         self.submitBut = QtWidgets.QPushButton(Dialog)
         self.submitBut.setGeometry(QtCore.QRect(150, 570, 231, 25))
         self.submitBut.setObjectName("submitBut")
-        self.imgView = QtWidgets.QGraphicsView(Dialog)
+        self.imgView = QtWidgets.QLabel(Dialog)
         self.imgView.setGeometry(QtCore.QRect(50, 120, 427, 240))
         self.imgView.setObjectName("imgView")
         self.fileInp = QtWidgets.QLineEdit(Dialog)
