@@ -15,7 +15,7 @@ class Ui_Dialog(object):
         self.submitBut = QtWidgets.QPushButton(Dialog)
         self.submitBut.setGeometry(QtCore.QRect(150, 520, 231, 25))
         self.submitBut.setObjectName("submitBut")
-        self.imgView = QtWidgets.QGraphicsView(Dialog)
+        self.imgView = QtWidgets.QLabel(Dialog)
         self.imgView.setGeometry(QtCore.QRect(50, 120, 427, 240))
         self.imgView.setObjectName("imgView")
         self.fileInp = QtWidgets.QLineEdit(Dialog)
@@ -36,7 +36,6 @@ class Ui_Dialog(object):
         self.ansLabel = QtWidgets.QLabel(Dialog)
         self.ansLabel.setGeometry(QtCore.QRect(230, 480, 67, 17))
         self.ansLabel.setObjectName("ansLabel")
-
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
