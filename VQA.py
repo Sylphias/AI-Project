@@ -6,14 +6,14 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets,Qt
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(534, 640)
         self.submitBut = QtWidgets.QPushButton(Dialog)
-        self.submitBut.setGeometry(QtCore.QRect(150, 520, 231, 25))
+        self.submitBut.setGeometry(QtCore.QRect(150, 570, 231, 25))
         self.submitBut.setObjectName("submitBut")
         self.imgView = QtWidgets.QGraphicsView(Dialog)
         self.imgView.setGeometry(QtCore.QRect(50, 120, 427, 240))
@@ -34,9 +34,17 @@ class Ui_Dialog(object):
         self.label_2.setGeometry(QtCore.QRect(50, 380, 181, 17))
         self.label_2.setObjectName("label_2")
         self.ansLabel = QtWidgets.QLabel(Dialog)
-        self.ansLabel.setGeometry(QtCore.QRect(230, 480, 67, 17))
+        self.ansLabel.setGeometry(QtCore.QRect(230, 480, 67, 50))
         self.ansLabel.setObjectName("ansLabel")
-
+        self.ansLabel.setAlignment(Qt.Qt.AlignCenter)
+        self.loaderLabel = QtWidgets.QLabel(Dialog)
+        self.loaderLabel.setGeometry(QtCore.QRect(230, 480, 67, 50))
+        self.loaderLabel.setObjectName("loaderLabel")
+        self.loaderLabel.setAlignment(Qt.Qt.AlignCenter)
+        movie = QtGui.QMovie("loader.gif")
+        self.loaderLabel.setMovie(movie)
+        movie.start()
+        self.loaderLabel.hide()
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
@@ -48,4 +56,3 @@ class Ui_Dialog(object):
         self.label.setText(_translate("Dialog", "1) Upload Image"))
         self.label_2.setText(_translate("Dialog", "2) Enter Question"))
         self.ansLabel.setText(_translate("Dialog", "Answer: "))
-
