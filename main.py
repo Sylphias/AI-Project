@@ -5,35 +5,62 @@ from VQA import Ui_Dialog as Dialog
 from PIL import Image
 import numpy as np
 import cv2
+import threading
+from pytorch_vqa import sample
 
 
 class VQAApp(QtWidgets.QMainWindow, Dialog):
 	def __init__(self):
 		super(self.__class__, self).__init__()
 		self.setupUi(self)
+		self.ansLabel.hide()
+		## Initializing the sampler
+		self.sampler = sample.Sample('pytorch_vqa/results.pth')
 		self.submitBut.clicked.connect(self.processQuestion)
 		self.uploadBut.clicked.connect(self.uploadFile)
 
-	def test(self):
-		self.ansLabel.show()
-		self.loaderLabel.hide()
-		self.ansLabel.setText = "Answer: "
+	# def test(self):
+	# 	self.ansLabel.show()
+	# 	self.loaderLabel.hide()
+	# 	self.ansLabel.setText = "Answer: "
+
 	@QtCore.pyqtSlot()
 	def processQuestion(self):
-		img = cv2.imread(self.file_path)
-		img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-		img_pil = Image.fromarray(img)
-		print(img_pil)
-		question = self.questionInp.toPlainText()
-		if(len(question) == 0 or question == ""):
-			self.ansLabel.setText = "Error: Please enter a question"
-			return
 		#start loader while it processes
 		self.loaderLabel.show()
+		# Disable submit button while processes
+		self.submitBut.setDisabled(True)
+		# Disable answer label
 		self.ansLabel.hide()
+		QtWidgets.QApplication.processEvents()
+		
+		img = cv2.imread(self.file_path)
+		img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+		self.img_pil = Image.fromarray(img)
+		self.question = self.questionInp.toPlainText()
+		if(len(self.question) == 0 or self.question == ""):
+			self.ansLabel.setText("Error: Please enter a question")
+			return
+		t = threading.Thread(target=self.saveThread)
+		t.start()
+		
 		#call function to process image and question in model
+		# result = self.receiveOutput(self.img_pil,self.question)
 
-		# self.ansLabel.setText = "Answer: "
+		# self.ansLabel.setText("Answer: " + result)
+		# self.submitBut.setDisabled(False)
+
+	def receiveOutput(self, image, question):
+		a = self.sampler.sample(image, question)
+		return a
+
+	def saveThread(self):
+		self.result = self.receiveOutput(self.img_pil, self.question)
+		self.ansLabel.setText("Answer: " + self.result)
+		self.submitBut.setDisabled(False)
+		self.loaderLabel.hide()
+		self.ansLabel.show()
+		
 
 
 
@@ -52,7 +79,7 @@ class VQAApp(QtWidgets.QMainWindow, Dialog):
 	def openFileNameDialog(self):
 		options = QtWidgets.QFileDialog.Options()
 		options |= QtWidgets.QFileDialog.DontUseNativeDialog
-		fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","PNG files (*.png)", options=options)
+		fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","JPG files (*.jpg)", options=options)
 		if fileName:
 			return fileName
 		return ""
