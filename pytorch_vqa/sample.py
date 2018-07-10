@@ -40,6 +40,7 @@ class Sample():
 
 
     def sample(self, image, question):
+        """ Processes a question and image, passes it through the trained net and returns an answer """
         question = question.lower()[:-1]
         question = question.split(' ')
         q, q_len = self.encode_question(question)
