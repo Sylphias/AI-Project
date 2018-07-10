@@ -4,7 +4,7 @@ train_path = qa_path+'train2014'  # directory of training images
 val_path = qa_path+'val2014'  # directory of validation images
 test_path = 'mscoco/test2015'  # directory of test images
 preprocessed_path = qa_path+'resnet-14x14.h5'  # path where preprocessed features are saved to and loaded from
-vocabulary_path = qa_path+'vocab.json'  # path where the used vocabularies for question and answers are saved to
+vocabulary_path = 'pytorch_vqa/vocab.json'  # path where the used vocabularies for question and answers are saved to
 
 task = 'OpenEnded'
 dataset = 'mscoco'

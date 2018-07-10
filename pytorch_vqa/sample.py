@@ -14,12 +14,14 @@ import utils
 import model
 from torch.autograd import Variable
 import resnet as caffe_resnet
-from PIL import Image
+
 
 class Sample():
-    def __init__(self, weights):
+    def __init__(self, path):
         with open(config.vocabulary_path, 'r') as fd:
             vocab = json.load(fd)
+
+        results = torch.load(path, map_location=lambda storage, loc: storage)
 
         self.answers = {v: k for k, v in vocab['answer'].items()}
         self.token_to_index = vocab['question']
@@ -27,7 +29,7 @@ class Sample():
         self.resnet = Net()
         self.net = nn.DataParallel(model.Net(len(vocab['question']) + 1))
 
-        self.net.load_state_dict(weights)
+        self.net.load_state_dict(results['weights'])
 
 
     def encode_question(self, question):
@@ -68,18 +70,3 @@ class Net(nn.Module):
         output = self.model(x)
         return output
 
-
-def main():
-    path = sys.argv[1]
-    results = torch.load(path, map_location=lambda storage, loc: storage)
-
-    sample = Sample(results['weights'])
-
-    filename = 'cat.jpg'
-    im = Image.open(filename)
-    for i in range(10):
-        print(sample.sample(im, "What color is its fur?"))
-
-
-if __name__ == '__main__':
-    main()

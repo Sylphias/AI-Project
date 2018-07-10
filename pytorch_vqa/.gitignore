@@ -1,0 +1,4 @@
+__pycache__
+*.pth
+pytorch_vqa/cat.jpg
+*.DS_Store

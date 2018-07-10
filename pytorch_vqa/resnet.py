@@ -80,5 +80,5 @@ def resnet152(pretrained=False):
     """
     model = ResNet(Bottleneck, [3, 8, 36, 3])
     if pretrained:
-        model.load_state_dict(torch.load('data/resnet152-caffe.pth'))
+        model.load_state_dict(torch.load('pytorch_vqa/data/resnet152-caffe.pth'))
     return model
