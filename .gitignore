@@ -1,4 +1,7 @@
 __pycache__
 *.pth
-cat.jpg
+*.jpg
+*.jpeg
 *.DS_Store
+*.ipynb
+*.png
