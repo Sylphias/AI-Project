@@ -13,7 +13,7 @@ import data
 import utils
 import model
 from torch.autograd import Variable
-from resnet import resnet as caffe_resnet
+import resnet as caffe_resnet
 from PIL import Image
 
 class Sample():
