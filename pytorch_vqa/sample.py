@@ -31,6 +31,9 @@ class Sample():
 
         self.net.load_state_dict(results['weights'])
 
+        self.net.eval()
+        self.resnet.eval()
+
 
     def encode_question(self, question):
         """ Turn a question into a vector of indices and a question length """
