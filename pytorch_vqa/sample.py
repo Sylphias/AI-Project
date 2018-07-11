@@ -70,7 +70,10 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.model = caffe_resnet.resnet152(pretrained=True)
 
-    def forward(self, x):
-        output = self.model(x)
-        return output
+        def save_output(module, input, output):
+            self.buffer = output
+        self.model.layer4.register_forward_hook(save_output)
 
+    def forward(self, x):
+        self.model(x)
+        return self.buffer
