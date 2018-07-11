@@ -135,7 +135,7 @@ def main():
         torch.save(results, target_name)
 
         # save best model so far
-        val_acc = tracker.to_dict()['val_acc']
+        val_acc = torch.FloatTensor(tracker.to_dict()['val_acc'])
         val_acc = val_acc.mean(dim=1).numpy()
 
         is_best = True
