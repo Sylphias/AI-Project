@@ -43,40 +43,48 @@ def run(net, loader, optimizer, tracker, train=False, prefix='', epoch=0):
 
     log_softmax = nn.LogSoftmax().cuda()
     for v, q, a, idx, q_len in tq:
-        var_params = {
-            'volatile': not train,
-            'requires_grad': False,
-        }
-        v = Variable(v.cuda(async=True), **var_params)
-        q = Variable(q.cuda(async=True), **var_params)
-        a = Variable(a.cuda(async=True), **var_params)
-        q_len = Variable(q_len.cuda(async=True), **var_params)
+        # var_params = {
+        #     'volatile': not train,
+        #     'requires_grad': False,
+        # }
 
-        out = net(v, q, q_len)
-        nll = -log_softmax(out)
-        loss = (nll * a / 10).sum(dim=1).mean()
-        acc = utils.batch_accuracy(out.data, a.data).cpu()
+        # v = Variable(v.cuda(async=True), **var_params)
+        # q = Variable(q.cuda(async=True), **var_params)
+        # a = Variable(a.cuda(async=True), **var_params)
+        # q_len = Variable(q_len.cuda(async=True), **var_params)
 
-        if train:
-            global total_iterations
-            update_learning_rate(optimizer, total_iterations)
+        with torch.set_grad_enabled(train):
 
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+            v = Variable(v.cuda(async=True))
+            q = Variable(q.cuda(async=True))
+            a = Variable(a.cuda(async=True))
+            q_len = Variable(q_len.cuda(async=True))
 
-            total_iterations += 1
-        else:
-            # store information about evaluation of this minibatch
-            _, answer = out.data.cpu().max(dim=1)
-            answ.append(answer.view(-1))
-            accs.append(acc.view(-1))
-            idxs.append(idx.view(-1).clone())
+            out = net(v, q, q_len)
+            nll = -log_softmax(out)
+            loss = (nll * a / 10).sum(dim=1).mean()
+            acc = utils.batch_accuracy(out.data, a.data).cpu()
 
-        loss_tracker.append(loss.data[0])
-        acc_tracker.append(acc.mean())
-        fmt = '{:.4f}'.format
-        tq.set_postfix(loss=fmt(loss_tracker.mean.value), acc=fmt(acc_tracker.mean.value))
+            if train:
+                global total_iterations
+                update_learning_rate(optimizer, total_iterations)
+
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+                total_iterations += 1
+            else:
+                # store information about evaluation of this minibatch
+                _, answer = out.data.cpu().max(dim=1)
+                answ.append(answer.view(-1))
+                accs.append(acc.view(-1))
+                idxs.append(idx.view(-1).clone())
+
+            loss_tracker.append(loss.item())
+            acc_tracker.append(acc.mean())
+            fmt = '{:.4f}'.format
+            tq.set_postfix(loss=fmt(loss_tracker.mean.value), acc=fmt(acc_tracker.mean.value))
 
     if not train:
         answ = list(torch.cat(answ, dim=0))
@@ -92,6 +100,7 @@ def main():
         from datetime import datetime
         name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     target_name = os.path.join('logs', '{}.pth'.format(name))
+    model_name = os.path.join('logs', '{}_model.pth'.format(name))
     print('will save to {}'.format(target_name))
 
     cudnn.benchmark = True
@@ -111,6 +120,7 @@ def main():
 
         results = {
             'name': name,
+            'epoch': i,
             'tracker': tracker.to_dict(),
             'config': config_as_dict,
             'weights': net.state_dict(),
@@ -119,9 +129,26 @@ def main():
                 'accuracies': r[1],
                 'idx': r[2],
             },
+            'optimizer' : optimizer.state_dict(),
             'vocab': train_loader.dataset.vocab,
         }
         torch.save(results, target_name)
+
+        # save best model so far
+        val_acc = tracker.to_dict()['val_acc']
+        val_acc = val_acc.mean(dim=1).numpy()
+
+        is_best = True
+        for j in range(len(val_acc) - 1):
+          if val_acc[-1] <= val_acc[j]:
+            is_best = False
+        if is_best:
+            save_model = {
+                'epoch': i,
+                'weights': net.state_dict()
+            }
+            torch.save(save_model, model_name)
+
 
 
 if __name__ == '__main__':

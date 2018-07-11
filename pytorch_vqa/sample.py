@@ -21,6 +21,7 @@ class Sample():
         with open(config.vocabulary_path, 'r') as fd:
             vocab = json.load(fd)
 
+        #results = torch.load(path)
         results = torch.load(path, map_location=lambda storage, loc: storage)
 
         self.answers = {v: k for k, v in vocab['answer'].items()}
