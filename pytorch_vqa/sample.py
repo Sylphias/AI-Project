@@ -54,13 +54,14 @@ class Sample():
         transform = utils.get_transform(config.image_size, config.central_fraction)
         inputImg = transform(image)
 
-        q = Variable(q.unsqueeze(0))
-        q_len = Variable(torch.tensor([q_len]))
-        v = Variable(self.resnet(inputImg.unsqueeze(0)))
+        with torch.no_grad():
+            q = Variable(q.unsqueeze(0))
+            q_len = Variable(torch.tensor([q_len]))
+            v = Variable(self.resnet(inputImg.unsqueeze(0)))
 
-        out = self.net(v, q, q_len)
+            out = self.net(v, q, q_len)
 
-        _, answer = out.data.max(dim=1)
+            _, answer = out.data.max(dim=1)
 
         return self.answers[int(answer)]
 
