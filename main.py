@@ -15,7 +15,7 @@ class VQAApp(QtWidgets.QMainWindow, Dialog):
 		self.setupUi(self)
 		self.ansLabel.hide()
 		## Initializing the sampler
-		self.sampler = sample.Sample('pytorch_vqa/results.pth')
+		self.sampler = sample.Sample('pytorch_vqa/model.pth')
 		self.submitBut.clicked.connect(self.processQuestion)
 		self.uploadBut.clicked.connect(self.uploadFile)
 

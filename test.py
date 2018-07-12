@@ -2,7 +2,7 @@ from pytorch_vqa import sample
 from PIL import Image
 
 
-sampler = sample.Sample('pytorch_vqa/results.pth')
+sampler = sample.Sample('pytorch_vqa/model.pth')
 
 
 # CAT
