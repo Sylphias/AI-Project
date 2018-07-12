@@ -19,50 +19,38 @@ class VQAApp(QtWidgets.QMainWindow, Dialog):
 		self.submitBut.clicked.connect(self.processQuestion)
 		self.uploadBut.clicked.connect(self.uploadFile)
 
-	# def test(self):
-	# 	self.ansLabel.show()
-	# 	self.loaderLabel.hide()
-	# 	self.ansLabel.setText = "Answer: "
-
 	@QtCore.pyqtSlot()
 	def processQuestion(self):
-		#start loader while it processes
+		# Start loading GIF while processing question
 		self.loaderLabel.show()
-		# Disable submit button while processes
+		# Disable submit button while processing question
 		self.submitBut.setDisabled(True)
-		# Disable answer label
-		self.ansLabel.hide()
+		# Updates GUI events on main thread
 		QtWidgets.QApplication.processEvents()
-		
+		# Converting image to PIL format
 		img = cv2.imread(self.file_path)
 		img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 		self.img_pil = Image.fromarray(img)
 		self.question = self.questionInp.toPlainText()
+		# Error checking
 		if(len(self.question) == 0 or self.question == ""):
 			self.ansLabel.setText("Error: Please enter a question")
 			return
+		# Thread to modify elements on GUI
 		t = threading.Thread(target=self.saveThread)
 		t.start()
-		
-		#call function to process image and question in model
-		# result = self.receiveOutput(self.img_pil,self.question)
-
-		# self.ansLabel.setText("Answer: " + result)
-		# self.submitBut.setDisabled(False)
 
 	def receiveOutput(self, image, question):
 		a = self.sampler.sample(image, question)
 		return a
 
 	def saveThread(self):
+		self.ansLabel.hide()
 		self.result = self.receiveOutput(self.img_pil, self.question)
 		self.ansLabel.setText("Answer: " + self.result)
 		self.submitBut.setDisabled(False)
 		self.loaderLabel.hide()
 		self.ansLabel.show()
-		
-
-
 
 	@QtCore.pyqtSlot()
 	def uploadFile(self):
@@ -71,7 +59,7 @@ class VQAApp(QtWidgets.QMainWindow, Dialog):
 		## Gets absolute path of image uploaded
 		self.file_path = os.path.abspath(fileName)
 		pixmap = QtGui.QPixmap(self.file_path)
-		self.imgView.setPixmap(pixmap)
+		self.imgView.setPixmap(pixmap.scaled(427, 240, QtCore.Qt.KeepAspectRatio))
 		self.imgView.setAlignment(QtCore.Qt.AlignCenter)
 		self.show()
 
