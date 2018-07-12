@@ -14,6 +14,6 @@ question = "What animal is this?"
 answers = sampler.sample(im, question, topk = 5) # topk: number of results to get back
 
 for i in range(len(answers)):
-	conf = answers[i][1]
-	if conf > threshold:
-		print("{}: {:.2f}".format(answers[i][0], conf))
+    conf = answers[i][1]
+    if conf > threshold:
+        print("{}: {:.2f}".format(answers[i][0], conf))
