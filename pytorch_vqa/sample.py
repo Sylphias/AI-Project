@@ -31,6 +31,7 @@ class Sample():
         self.net = nn.DataParallel(model.Net(len(vocab['question']) + 1))
 
         self.net.load_state_dict(results['weights'])
+        self.softmax = nn.Softmax(dim=1)
 
         self.net.eval()
         self.resnet.eval()
@@ -45,7 +46,7 @@ class Sample():
         return vec, len(question)
 
 
-    def sample(self, image, question):
+    def sample(self, image, question, topk = 5):
         """ Processes a question and image, passes it through the trained net and returns an answer """
         question = question.lower().replace("?", "")
         question = question.split(' ')
@@ -61,9 +62,17 @@ class Sample():
 
             out = self.net(v, q, q_len)
 
-            _, answer = out.data.max(dim=1)
+            out = self.softmax(out)
 
-        return self.answers[int(answer)]
+            answer = out.data.topk(topk, dim=1)
+
+            answers = []
+
+            for i in range(topk):
+                answers.append((self.answers[int(answer[1][0][i])], float(answer[0][0][i])))
+
+            
+        return answers
 
 
 class Net(nn.Module):
