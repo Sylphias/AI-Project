@@ -38,7 +38,7 @@ def main():
     plt.title('Training and Test Losses over Epochs')
     plt.plot(train_loss)
     plt.plot(val_loss)
-    plt.legend(['Training Loss', 'Test Loss'], loc='lower right')
+    plt.legend(['Training Loss', 'Test Loss'], loc='upper right')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.grid(alpha = 0.3)
