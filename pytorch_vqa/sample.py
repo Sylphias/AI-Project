@@ -21,8 +21,8 @@ class Sample():
         with open(config.vocabulary_path, 'r') as fd:
             vocab = json.load(fd)
 
-        #results = torch.load(path)
-        results = torch.load(path, map_location=lambda storage, loc: storage)
+        results = torch.load(path)
+        # results = torch.load(path, map_location=lambda storage, loc: storage)
 
         self.answers = {v: k for k, v in vocab['answer'].items()}
         self.token_to_index = vocab['question']
@@ -62,9 +62,9 @@ class Sample():
 
             out = self.net(v, q, q_len)
 
-            out = self.softmax(out)
+            out = self.softmax(out) # to get confidence
 
-            answer = out.data.topk(topk, dim=1)
+            answer = out.data.topk(topk, dim=1) # top k number of answers
 
             answers = []
 
