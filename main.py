@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 import os
-from VQA import Ui_Dialog as Dialog
+from gui.VQA import Ui_Dialog as Dialog
 from PIL import Image
 import numpy as np
 import cv2
