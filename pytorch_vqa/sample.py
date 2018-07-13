@@ -24,6 +24,8 @@ class Sample():
         results = torch.load(path)
         # results = torch.load(path, map_location=lambda storage, loc: storage)
 
+        print("LOADED MODEL FROM EPOCH {}".format(results['epoch']))
+
         self.answers = {v: k for k, v in vocab['answer'].items()}
         self.token_to_index = vocab['question']
 

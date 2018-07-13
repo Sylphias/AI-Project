@@ -25,7 +25,7 @@ def main():
     train_loss = train_loss.mean(dim=1).numpy()
 
     plt.figure()
-    plt.title('Training and Test Accuracies over Epochs')
+    plt.title('Average Training and Test Accuracies over Epochs')
     plt.plot(train_acc)
     plt.plot(val_acc)
     plt.legend(['Training Accuracy', 'Test Accuracy'], loc='lower right')
@@ -35,7 +35,7 @@ def main():
     plt.savefig('accs.png')
 
     plt.figure()
-    plt.title('Training and Test Losses over Epochs')
+    plt.title('Average Training and Test Losses over Epochs')
     plt.plot(train_loss)
     plt.plot(val_loss)
     plt.legend(['Training Loss', 'Test Loss'], loc='upper right')
