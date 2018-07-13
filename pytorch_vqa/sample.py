@@ -21,8 +21,10 @@ class Sample():
         with open(config.vocabulary_path, 'r') as fd:
             vocab = json.load(fd)
 
-        #results = torch.load(path)
-        results = torch.load(path, map_location=lambda storage, loc: storage)
+        results = torch.load(path)
+        # results = torch.load(path, map_location=lambda storage, loc: storage)
+
+        print("LOADED MODEL FROM EPOCH {}".format(results['epoch']))
 
         self.answers = {v: k for k, v in vocab['answer'].items()}
         self.token_to_index = vocab['question']
@@ -31,6 +33,7 @@ class Sample():
         self.net = nn.DataParallel(model.Net(len(vocab['question']) + 1))
 
         self.net.load_state_dict(results['weights'])
+        self.softmax = nn.Softmax(dim=1)
 
         self.net.eval()
         self.resnet.eval()
@@ -45,7 +48,7 @@ class Sample():
         return vec, len(question)
 
 
-    def sample(self, image, question):
+    def sample(self, image, question, topk = 5):
         """ Processes a question and image, passes it through the trained net and returns an answer """
         question = question.lower().replace("?", "")
         question = question.split(' ')
@@ -54,15 +57,24 @@ class Sample():
         transform = utils.get_transform(config.image_size, config.central_fraction)
         inputImg = transform(image)
 
-        q = Variable(q.unsqueeze(0))
-        q_len = Variable(torch.tensor([q_len]))
-        v = Variable(self.resnet(inputImg.unsqueeze(0)))
+        with torch.no_grad():
+            q = Variable(q.unsqueeze(0))
+            q_len = Variable(torch.tensor([q_len]))
+            v = Variable(self.resnet(inputImg.unsqueeze(0)))
 
-        out = self.net(v, q, q_len)
+            out = self.net(v, q, q_len)
 
-        _, answer = out.data.max(dim=1)
+            out = self.softmax(out) # to get confidence
 
-        return self.answers[int(answer)]
+            answer = out.data.topk(topk, dim=1) # top k number of answers
+
+            answers = []
+
+            for i in range(topk):
+                answers.append((self.answers[int(answer[1][0][i])], float(answer[0][0][i])))
+
+            
+        return answers
 
 
 class Net(nn.Module):
