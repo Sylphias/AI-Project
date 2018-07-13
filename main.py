@@ -61,7 +61,7 @@ class VQAApp(QtWidgets.QMainWindow, Dialog):
 			conf = result[i][1]
 			if conf > self.threshold:
 				string_result += "{}: {:.2f}\n".format(result[i][0], conf)
-		string_result = string_result[:-2]
+		# string_result = string_result[:-2]
 		return string_result
 
 	def saveThread(self):
