@@ -21,8 +21,8 @@ class Sample():
         with open(config.vocabulary_path, 'r') as fd:
             vocab = json.load(fd)
 
-        # results = torch.load(path)
-        results = torch.load(path, map_location=lambda storage, loc: storage)
+        # results = torch.load(path)    # CUDA
+        results = torch.load(path, map_location=lambda storage, loc: storage)   # if loading from CPU
 
         print("LOADED MODEL FROM EPOCH {}".format(results['epoch']))
 
