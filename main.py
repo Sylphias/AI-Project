@@ -90,7 +90,7 @@ class VQAApp(QtWidgets.QMainWindow, Dialog):
 	def openFileNameDialog(self):
 		options = QtWidgets.QFileDialog.Options()
 		options |= QtWidgets.QFileDialog.DontUseNativeDialog
-		fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","JPG files (*.jpg)", options=options)
+		fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","JPG files (*.jpg), JPEG files (*.jpeg)", options=options)
 		if fileName:
 			return fileName
 		return ""
